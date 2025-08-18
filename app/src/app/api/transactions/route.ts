@@ -27,12 +27,12 @@ export async function POST(request: NextRequest) {
     await connectDB();
     
     const body = await request.json();
-    const { amount, description, date, type } = body;
+    const { amount, description, date, type, category } = body;
     
     // Validate required fields
-    if (!amount || !description || !date) {
+    if (!amount || !description || !date || !category) {
       return NextResponse.json(
-        { error: 'Amount, description, and date are required' },
+        { error: 'Amount, description, date, and category are required' },
         { status: 400 }
       );
     }
@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
       description: description.trim(),
       date: new Date(date),
       type: type || 'expense',
+      category: category.trim(),
     });
     
     const savedTransaction = await transaction.save();

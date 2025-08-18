@@ -5,6 +5,7 @@ export interface ITransaction extends Document {
   description: string;
   date: Date;
   type: 'income' | 'expense';
+  category: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,6 +33,10 @@ const TransactionSchema = new Schema<ITransaction>(
       enum: ['income', 'expense'],
       required: [true, 'Type is required'],
       default: 'expense',
+    },
+    category: {
+      type: String,
+      required: [true, 'Category is required'],
     },
   },
   {

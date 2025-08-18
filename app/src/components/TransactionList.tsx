@@ -13,6 +13,7 @@ interface Transaction {
   description: string;
   date: string;
   type: 'income' | 'expense';
+  category: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -131,7 +132,7 @@ export default function TransactionList({ refreshTrigger, onEditTransaction }: T
                   <div>
                     <h3 className="font-medium">{transaction.description}</h3>
                     <p className="text-sm text-gray-500">
-                      {format(new Date(transaction.date), 'MMM dd, yyyy')}
+                      {transaction.category} • {format(new Date(transaction.date), 'MMM dd, yyyy')}
                     </p>
                   </div>
                 </div>

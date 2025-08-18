@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { transactionSchema, type TransactionFormData } from '@/lib/validations';
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/lib/categories';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -19,6 +20,7 @@ interface Transaction {
   description: string;
   date: string;
   type: 'income' | 'expense';
+  category: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -35,6 +37,9 @@ export default function TransactionForm({
   onEditComplete 
 }: TransactionFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedType, setSelectedType] = useState<'income' | 'expense'>(
+    editingTransaction?.type || 'expense'
+  );
   
   const form = useForm({
     resolver: zodResolver(transactionSchema),
@@ -43,6 +48,7 @@ export default function TransactionForm({
       description: editingTransaction?.description || '',
       date: editingTransaction ? format(new Date(editingTransaction.date), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
       type: editingTransaction?.type || 'expense',
+      category: editingTransaction?.category || '',
     },
   });
 
@@ -124,7 +130,14 @@ export default function TransactionForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select 
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        setSelectedType(value as 'income' | 'expense');
+                        form.setValue('category', ''); // Reset category when type changes
+                      }} 
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select type" />
@@ -140,6 +153,31 @@ export default function TransactionForm({
                 )}
               />
             </div>
+            
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {(selectedType === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES).map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             
             <FormField
               control={form.control}
