@@ -160,7 +160,7 @@ src/
 
 ## Development
 
-{https://expense-tracker-nine-navy.vercel.app/}
+https://expense-tracker-nine-navy.vercel.app/
 
 ### Available Scripts
 
